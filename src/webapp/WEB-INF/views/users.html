@@ -1,10 +1,71 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>User Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin-bottom: 10px; }
+        label { display: inline-block; width: 100px; }
+        input { padding: 5px; width: 200px; }
+        button { padding: 5px 15px; margin-top: 10px; }
+        table { margin-top: 20px; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
+<h1>User Management</h1>
 
+<h2>Add/Edit User</h2>
+<form th:action="@{/users/add}" th:object="${user}" method="post">
+    <input type="hidden" th:field="*{id}">
+
+    <div class="form-group">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" th:field="*{firstName}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" th:field="*{lastName}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" th:field="*{email}" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        <span th:text="${user.id != null} ? 'Update User' : 'Add User'"></span>
+    </button>
+</form>
+
+<h2>User List</h2>
+<table>
+    <thead>
+    <tr>
+        <th> </th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user, stat : ${users}">
+        <td th:text="${stat.index + 1}"></td>
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.lastName}"></td>
+        <td th:text="${user.email}"></td>
+        <td>
+            <a th:href="@{/users/edit/{id}(id=${user.id})}">Edit</a> |
+            <a th:href="@{/users/delete/{id}(id=${user.id})}"
+               onclick="return confirm('Delete this user?')">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>
