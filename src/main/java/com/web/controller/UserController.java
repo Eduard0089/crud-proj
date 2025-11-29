@@ -8,11 +8,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/users")
+//@RequestMapping("/")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
 
     @GetMapping
     public String getAllUsers(Model model) {
