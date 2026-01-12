@@ -8,39 +8,39 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-//@RequestMapping("/")
+@RequestMapping("/admin")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
 
-    @GetMapping
+    @GetMapping("/users")
     public String getAllUsers(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("users", userService.getAllUsers());
         return "users";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/users/add")
     public String addUser(@ModelAttribute User user) {
         userService.saveOrUpdate(user);
-        return "redirect:/users";
+        return "redirect:/admin/users";
     }
 
-    @PostMapping("/update")
+    @PostMapping("/users/update")
     public String updateUser(@ModelAttribute User user) {
         userService.saveOrUpdate(user);
-        return "redirect:/users";
+        return "redirect:/admin/users";
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         userService.delete(id);
-        return "redirect:/users";
+        return "redirect:/admin/users";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/users/edit/{id}")
     public String editUserForm(@PathVariable Long id, Model model) {
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("user", userService.getUserById(id));

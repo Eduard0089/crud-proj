@@ -1,17 +1,16 @@
 package com.web.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.*;
 
 
 @Entity
 @Table(name = "users")
 
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +25,18 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    public User() {};
+    @Column(name = "password")
+    private String password;
 
-    @Override
-    public String toString() {
-        return ("FirstName " + firstName + " LastName " + lastName + " Email " + email);
-    }
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> authorities = new HashSet<>();
+
+    public User() {};
 
     public User(String firstName, String lastName, String email) {
         this.firstName = firstName;
@@ -69,5 +74,80 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Set<Role> getAuthoritiesSet() {
+        return authorities;
+    }
+
+    public void addRole(Role role) {
+        this.authorities.add(role);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthoritiesSet(Set<Role> authorities) {
+        this.authorities = authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", roles=" + authorities +
+                '}';
     }
 }
